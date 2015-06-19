@@ -1,3 +1,26 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
+
 puts "Hello, world."
+
+ARGV.each do |arg|
+  puts "Argghhh ye #{arg}"
+end
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: None. This is just a test silly."
+
+  opts.on("-v", "--[no-]verbose") do |v|
+    options[:verbose] = v
+  end
+
+  opts.on("-n") do |n|
+    options[:nnnnn] = n
+  end
+
+end.parse!
+
+p options
+p ARGV
