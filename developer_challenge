@@ -17,11 +17,8 @@ OptionParser.new do |opts|
 
 end.parse!
 
-
 def get_url(url)
-
   response = Net::HTTP.get_response(URI(url))
-
   case response
   when Net::HTTPSuccess then
     response.body
@@ -33,4 +30,13 @@ def get_url(url)
   end
 end
 
-# p get_url('http://slowapi.com/delay/0.3')
+case options[:mode]
+when 'slowapi' then
+  i = options[:number] || 1
+  while i > 0
+    puts get_url('http://slowapi.com/delay/0.3')
+    i-=1
+  end
+else
+  puts "Not a valid test!"
+end
