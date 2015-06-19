@@ -1,26 +1,36 @@
 #!/usr/bin/env ruby
 
 require 'optparse'
-
-puts "Hello, world."
-
-ARGV.each do |arg|
-  puts "Argghhh ye #{arg}"
-end
+require 'net/http'
 
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: None. This is just a test silly."
 
-  opts.on("-v", "--[no-]verbose") do |v|
-    options[:verbose] = v
+  opts.on("-t","--test MODE") do |mode|
+    options[:mode] = mode
   end
 
-  opts.on("-n") do |n|
-    options[:nnnnn] = n
+  opts.on("-n NUMBER") do |number|
+    options[:number] = number.to_i
   end
 
 end.parse!
 
-p options
-p ARGV
+
+def get_url(url)
+
+  response = Net::HTTP.get_response(URI(url))
+
+  case response
+  when Net::HTTPSuccess then
+    response.body
+  when Net::HTTPRedirection then
+    location = response['location']
+    get_url(location)
+  else
+    response.value
+  end
+end
+
+# p get_url('http://slowapi.com/delay/0.3')
