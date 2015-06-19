@@ -1,7 +1,7 @@
 task default: %w[setup]
 
 task :setup do
-  sh 'chmod +x bin/developer_challenge'
+  sh 'chmod +x developer_challenge'
 end
 
 # It seems that from rake, this command does nothing.
