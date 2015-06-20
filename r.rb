@@ -6,6 +6,10 @@ class TreeParser
   # ...(how to incorporate the helper methods..?)
   # Get rid of paths instance variable.
 
+  # Also subsequent runs without closing pry causes
+  # the process to grow and grow, if my measurement
+  # method is sound.
+
   def initialize
     @paths = {}
   end
@@ -58,15 +62,11 @@ class TreeParser
     end
     puts Time.now - time
     puts `ps -o rss -p #{$$}`.strip.split.last.to_i * 1024
-    # tree.last.inject do |min,path|
-    #   min.inject{|sum,x|sum+x} > path.inject{|sum,x|sum+x} ? path : min
-    # end
+    # vvvvvvv Really need to refactor this vvvvvv
     last_row = (tree.length-1).to_s
     last_row_first = (last_row+'0').to_sym
     minpath = paths[last_row_first] if paths[last_row_first]
-    puts tree.length
     for i in 0..tree.length-1
-      puts (last_row+i.to_s).to_sym
       current_path = paths[(last_row+i.to_s).to_sym]
       minpath.inject{|sum,x|sum+x} > current_path.inject{|sum,x|sum+x} ? (minpath = current_path) : minpath
     end
