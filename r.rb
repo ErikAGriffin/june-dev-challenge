@@ -1,12 +1,5 @@
 class TreeParser
 
-  # Handle Double (or even triple!) digit rows!!!
-  # While I 'fixed' the hash method to take up to 9999 rows,
-  # the array method can take a hypothetically infinite number of rows
-  # without key collision.
-  # Thus I will use a nested array to store the tree,
-  # and continue to use a hash for the paths to each node.
-
   attr_reader :paths
 
   def initialize
@@ -17,9 +10,7 @@ class TreeParser
     result = []
     File.open(file).each do |line|
       row = []
-      line.split(" ").each do |number|
-        row << number.to_i
-      end
+      line.split(" ").each {|number| row << number.to_i }
       result << row
     end
     result
@@ -65,20 +56,6 @@ class TreeParser
     puts `ps -o rss -p #{$$}`.strip.split.last.to_i * 1024
   end
 
-  def least_sum_old(file)
-    @paths = {}
-    time = Time.now
-    tree = load_triangle2(file)
-    tree.each_key do |key|
-      path = (find_smallest_parent(key).dup if find_smallest_parent(key)) || []
-      # path = path.dup
-      path << tree[key]
-      paths[key] = path
-    end
-    puts Time.now - time
-    puts `ps -o rss -p #{$$}`.strip.split.last.to_i * 1024
-  end
-
   def find_smallest_parent(key)
     left = find_left_parent(key)
     right = find_right_parent(key)
@@ -91,21 +68,6 @@ class TreeParser
       result = paths[right]
     end
     result
-  end
-
-
-  def find_smallest_parent_old(node)
-    first = first_parent_of(node)
-    second = second_parent_of(node)
-    ret = nil
-    if paths[first] && paths[second]
-      ret = paths[first].inject{|sum,x| sum + x } < paths[second].inject{|sum,x| sum + x } ? paths[first] : paths[second]
-    elsif paths[second]
-      ret = paths[second]
-    elsif paths[first]
-      ret = paths[first]
-    end
-    ret
   end
 
 end
