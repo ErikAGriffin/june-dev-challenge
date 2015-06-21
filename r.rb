@@ -1,4 +1,4 @@
-class TreeParser
+class OldTreeParser
 
   attr_reader :paths
 
