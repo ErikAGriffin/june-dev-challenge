@@ -6,7 +6,21 @@ class TreeParser
 
   class << self
 
-    def least_sum(file)
+    # So instead of a hash of all the paths,
+    # and constantly summing the paths
+    # I could replace each number in the tree with the least_sum
+    # it took to get there.
+
+    # Before I dive into all that I need to make it return
+    # the least sum again, and write some tests.
+
+    # Ahh actually with this current implementation there WOULD
+    # be key collisions, just not with the example file given!
+    # Row 101 Collumn 0 would conflict with Row 10 Collumn 10.
+    # Duh. Either go back to the previous implementation or
+    # try out the tree substitution.
+
+    def parse_least_sum(file)
       paths = {}
       time = Time.now  # --- Logging
       tree = load_triangle(file)
@@ -21,6 +35,13 @@ class TreeParser
       puts Time.now - time # --- Logging
       puts `ps -o rss -p #{$$}`.strip.split.last.to_i * 1024 # --- Logging
       # vvvvvvv Really need to refactor this vvvvvv
+      last_row = tree.length-1
+      minimum = paths[(last_row.to_s+'0').to_sym]
+      for i in 0..last_row
+        key = (last_row.to_s+i.to_s).to_sym
+        minimum.inject{|sum,x|sum+x} > paths[key].inject{|sum,x|sum+x} ? (minimum = paths[key]) : minimum
+      end
+      minimum.inject{|sum,x|sum+x}
     end
 
     protected
@@ -57,8 +78,6 @@ class TreeParser
       key1 = key1.join.to_i-1
       (key1.to_s+key2.join).to_sym
     end
-
-
 
     def find_smallest_parent(key,paths)
       left = find_left_parent(key)
