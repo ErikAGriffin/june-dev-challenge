@@ -3,6 +3,7 @@
 require 'optparse'
 require './lib/TreeParser'
 require './lib/HTTPHandler'
+require './lib/modes'
 
 options = {}
 ARGV << '-h' if ARGV.empty?
@@ -32,10 +33,9 @@ options[:number] ||= 1
 
 case options[:mode]
   when 'slowapi' then
-    options[:number].times {puts HTTPHandler.get_url('http://slowapi.com/delay/0.3')}
+    slowapi(options[:number])
   when 'minimum_path_sum' then
-    raise "Missing argument -f FILE for 'minimum_path_sum'" if !options[:file]
-    puts TreeParser.parse_least_sum(options[:file])
+    minimum_path_sum(options[:file])
   else
-    raise "Missing a valid --test paramater."
+    raise "Missing a valid --test argument. 'slowapi' | 'minimum_path_sum -f FILE'"
 end
