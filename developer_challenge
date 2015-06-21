@@ -1,42 +1,41 @@
 #!/usr/bin/env ruby
 
 require 'optparse'
-require 'net/http'
+require './lib/TreeParser'
+require './lib/HTTPHandler'
 
 options = {}
+ARGV << '-h' if ARGV.empty?
 OptionParser.new do |opts|
-  opts.banner = "Usage: None. This is just a test silly."
+  opts.banner = "Usage: developer_challenge [options]"
 
-  opts.on("-t","--test MODE") do |mode|
+  opts.on("-t","--test MODE","Which test to make. Required.") do |mode|
     options[:mode] = mode
   end
 
-  opts.on("-n NUMBER") do |number|
+  opts.on("-f","--file FILE","Triangle file for minimum_path_sum") do |file|
+    options[:file] = file
+  end
+
+  opts.on("-n  NUMBER","Number of slowapi requests to make") do |number|
     options[:number] = number.to_i
+  end
+
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
   end
 
 end.parse!
 
-def get_url(url)
-  response = Net::HTTP.get_response(URI(url))
-  case response
-  when Net::HTTPSuccess then
-    response.body
-  when Net::HTTPRedirection then
-    location = response['location']
-    get_url(location)
-  else
-    response.value
-  end
-end
+options[:number] ||= 1
 
 case options[:mode]
-when 'slowapi' then
-  i = options[:number] || 1
-  while i > 0
-    puts get_url('http://slowapi.com/delay/0.3')
-    i-=1
-  end
-else
-  puts "Not a valid test!"
+  when 'slowapi' then
+    options[:number].times {puts HTTPHandler.get_url('http://slowapi.com/delay/0.3')}
+  when 'minimum_path_sum' then
+    raise "Missing argument -f FILE for 'minimum_path_sum'" if !options[:file]
+    puts TreeParser.parse_least_sum(options[:file])
+  else
+    raise "Missing a valid --test paramater."
 end
